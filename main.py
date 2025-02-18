@@ -93,6 +93,8 @@ def extract_page(data_url, rows_number, driver,add_linkedin):
             sub_list.append(phone_number.text.split("\n")[1])
         except Exception as e:
             sub_list.append("N/A")
+            sub_list[6] = sub[4]
+            sub_list[7] = sub[5]
         #     Remove company keywords.
         # sub_list.append(rows[i].text.split(sub_list[4])[1].strip("\n"))
         ActionChains(driver).send_keys(Keys.ESCAPE).perform()
@@ -116,7 +118,8 @@ if __name__ == "__main__":
     my_array = list()
     for i in range(1, total_number // rows_number + 1):
         my_array.append(25)
-    my_array.append(total_number % rows_number)
+    if total_number % rows_number != 0:
+        my_array.append(total_number % rows_number)
 
     # time waiting between extract page
     time_random = random.randint(int(args.min),int(args.max) + 1)
