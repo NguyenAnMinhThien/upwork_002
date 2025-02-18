@@ -65,7 +65,7 @@ def extract_page(data_url, rows_number, driver):
             phone_number = driver.find_element(By.XPATH, '//div[@data-testid="ContactPhoneInformationContainer"]')
             phone_number.find_element(By.TAG_NAME, 'label').click()
             sub_list.append(phone_number.text.split("\n")[1])
-        except selenium.common.exceptions.NoSuchElementException as e:
+        except Exception as e:
             sub_list.append("N/A")
         sub_list.append(rows[i].text.split(sub_list[4])[1].strip("\n"))
         info_list.append(sub_list)
@@ -127,13 +127,9 @@ if __name__ == "__main__":
     driver.close()
     pandas.DataFrame(final_list, columns=['Name','Job Title', 'Company','Location', 'Company','Email','Phone','Company industries and Keywords']).to_csv(f"{args.output}",index=False)
 
-    if os.name == "nt":
-        # window
-        print("Output file here: \n")
-        print(os.path.join(os.getcwd(),"\\",args.output))
-    else:
-        # other
-        print("Output file here: \n")
-        print(os.path.join(os.getcwd(),"/",args.output))
+
+    print("Output file here: \n")
+    print(os.path.join(os.getcwd(),args.output))
+
 
 
