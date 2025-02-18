@@ -1,4 +1,5 @@
 import time
+import os
 import random
 from selenium.webdriver.common.actions.action_builder import ActionBuilder
 import pandas
@@ -125,5 +126,14 @@ if __name__ == "__main__":
 
     driver.close()
     pandas.DataFrame(final_list, columns=['Name','Job Title', 'Company','Location', 'Company','Email','Phone','Company industries and Keywords']).to_csv(f"{args.output}",index=False)
+
+    if os.name == "nt":
+        # window
+        print("Output file here: \n")
+        print(os.path.join(os.getcwd(),"\\",args.output))
+    else:
+        # other
+        print("Output file here: \n")
+        print(os.path.join(os.getcwd(),"/",args.output))
 
 
