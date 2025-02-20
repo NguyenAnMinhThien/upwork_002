@@ -41,7 +41,7 @@ def checking_internet_connection(driver):
         return True
 
 
-def extract_page(data_url, rows_number, driver,add_linkedin):
+def extract_page(data_url, rows_number, driver,add_linkedin, filename, data_frame):
     info_list = list()
     driver.get(data_url)
     WebDriverWait(driver, 10).until(
@@ -127,7 +127,7 @@ def extract_page(data_url, rows_number, driver,add_linkedin):
             # sub_list.append(rows[i].text.split(sub_list[4])[1].strip("\n"))
             ActionChains(driver).send_keys(Keys.ESCAPE).perform()
             info_list.append(sub_list)
-    return info_list
+    pandas.DataFrame(data =info_list ,columns=['Name','Job Title', 'Company','Email', 'URL Linkedin', 'Status','Location', 'Company Number','Phone']).to_csv(f"{filename}",index=False, mode='a', header=False)
 
 
 
@@ -138,13 +138,22 @@ if __name__ == "__main__":
     parser.add_argument("-min", help="min time you want", required=True)
     parser.add_argument("-max", help="max time you want to wait", required=True)
     parser.add_argument("-output", help="output file name, e.x myfile.csv", required=True)
-    parser.add_argument("-url", help="URL of first page you want to scrape, all the next page will be calculated", required=True)
-    parser.add_argument("-records", help="Total records contain in that webpage", required=True)
+    parser.add_argument("-url", help="URL of first page you want to scrape, all the next page will be calculated", required=False)
+    parser.add_argument("-records", help="Total records contain in that webpage", required=False)
+    parser.add_argument("-con", help="Reply y or n", required=True)
 
     args = parser.parse_args()
     start_time = time.time()
     # calculate total number
-    total_number = int(args.records)
+    if str(args.con).lower() == "n":
+        data_url = args.url
+        total_number = int(args.records)
+    else:
+        with open("status.txt", encoding='utf-8', mode='r') as file:
+            data = file.read()
+        data_url = data.split("\n")[0]
+        total_number = int(data.split("\n")[1])
+
     rows_number = 25
     my_array = list()
     for i in range(1, total_number // rows_number + 1):
@@ -166,29 +175,30 @@ if __name__ == "__main__":
     inputs[1].send_keys("j;*v'&sH8.#RLc3")
     driver.find_element(By.XPATH, '//*[contains(@data-cy,"login-button")]').click()
     time.sleep(10)
-    data_url = args.url
 
-    final_list = list()
     count = 0
+    df = pandas.DataFrame(columns=['Name','Job Title', 'Company','Email', 'URL Linkedin', 'Status','Location', 'Company Number','Phone'])
+    df.to_csv(args.output, index=False)
     for rows_number in my_array:
         if count == 0:
             flag = True
         else:
             flag = False
-        info_list = extract_page(data_url=data_url,rows_number=rows_number,driver=driver, add_linkedin=flag)
-        time.sleep(time_random)
-        final_list = final_list + info_list
+        extract_page(data_url=data_url,rows_number=rows_number,driver=driver, add_linkedin=flag, filename=args.output, data_frame = df)
+        total_number = total_number - 25
         count = count + 1
         if count < my_array.__len__():
             go_to_next = driver.find_element(By.CLASS_NAME, 'apollo-icon-chevron-arrow-right')
             driver.execute_script("arguments[0].click();", go_to_next)
             time.sleep(1)
             data_url = driver.current_url
+            with open("status.txt",encoding='utf-8',mode='w') as file:
+                file.write(data_url+"\n"+total_number.__str__())
+        time.sleep(time_random)
 
 
 
     driver.close()
-    pandas.DataFrame(final_list, columns=['Name','Job Title', 'Company','Email', 'URL Linkedin', 'Status','Location', 'Company Number','Phone']).to_csv(f"{args.output}",index=False)
     print(f"Time taken: {time.time() - start_time}\n")
 
 
