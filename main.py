@@ -140,6 +140,7 @@ if __name__ == "__main__":
     parser.add_argument("-output", help="output file name, e.x myfile.csv", required=True)
     parser.add_argument("-url", help="URL of first page you want to scrape, all the next page will be calculated", required=False)
     parser.add_argument("-records", help="Total records contain in that webpage", required=False)
+    parser.add_argument("-rows", help="Total records contain per page", required=False)
     parser.add_argument("-con", help="Reply y or n", required=True)
 
     args = parser.parse_args()
@@ -159,10 +160,10 @@ if __name__ == "__main__":
         total_number = int(data.split("\n")[1])
         df = pandas.DataFrame(columns=['Name','Job Title', 'Company','Email', 'URL Linkedin', 'Status','Location', 'Company Number','Phone'])
 
-    rows_number = 25
+    rows_number = int(args.rows)
     my_array = list()
     for i in range(1, total_number // rows_number + 1):
-        my_array.append(25)
+        my_array.append(rows_number)
     if total_number % rows_number != 0:
         my_array.append(total_number % rows_number)
 
@@ -188,7 +189,7 @@ if __name__ == "__main__":
         else:
             flag = False
         extract_page(data_url=data_url,rows_number=rows_number,driver=driver, add_linkedin=flag, filename=args.output, data_frame = df)
-        total_number = total_number - 25
+        total_number = total_number - rows_number
         count = count + 1
         if count < my_array.__len__():
             go_to_next = driver.find_element(By.CLASS_NAME, 'apollo-icon-chevron-arrow-right')
