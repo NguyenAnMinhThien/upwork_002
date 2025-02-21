@@ -148,11 +148,16 @@ if __name__ == "__main__":
     if str(args.con).lower() == "n":
         data_url = args.url
         total_number = int(args.records)
+        df = pandas.DataFrame(
+            columns=['Name', 'Job Title', 'Company', 'Email', 'URL Linkedin', 'Status', 'Location', 'Company Number',
+                     'Phone'])
+        df.to_csv(args.output, index=False)
     else:
         with open("status.txt", encoding='utf-8', mode='r') as file:
             data = file.read()
         data_url = data.split("\n")[0]
         total_number = int(data.split("\n")[1])
+        df = pandas.DataFrame(columns=['Name','Job Title', 'Company','Email', 'URL Linkedin', 'Status','Location', 'Company Number','Phone'])
 
     rows_number = 25
     my_array = list()
@@ -177,8 +182,6 @@ if __name__ == "__main__":
     time.sleep(10)
 
     count = 0
-    df = pandas.DataFrame(columns=['Name','Job Title', 'Company','Email', 'URL Linkedin', 'Status','Location', 'Company Number','Phone'])
-    df.to_csv(args.output, index=False)
     for rows_number in my_array:
         if count == 0:
             flag = True
