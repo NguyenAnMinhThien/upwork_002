@@ -89,9 +89,13 @@ def extract_page(data_url, rows_number, driver,add_linkedin, filename, data_fram
                 sub_list.append("N/A")
 
             # Add linkedin
-            linkedin = rows[i].find_element(By.CLASS_NAME, 'apollo-icon-linkedin')
-            parrent = linkedin.find_element(By.XPATH, "./..")
-            sub_list.append(parrent.get_attribute("href"))
+            try:
+                linkedin = rows[i].find_element(By.CLASS_NAME, 'apollo-icon-linkedin')
+                parrent = linkedin.find_element(By.XPATH, "./..")
+                sub_list.append(parrent.get_attribute("href"))
+            except Exception as e:
+                sub_list.append("N/A")
+
 
             # Status
             sub_list.append("")
