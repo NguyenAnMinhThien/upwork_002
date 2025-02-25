@@ -24,7 +24,12 @@ source venv/bin/activate
 
 pip install -r requirement.txt
 
-python main.py -min 0 -max 1 -output myfile.csv -records 65 -url 'https://app.apollo.io/#/people?contactLabelIds[]=672e5c63c3285602cf472fef&prospectedByCurrentTeam[]=yes&sortByField=%5Bnone%5D&sortAscending=false&page=1'
+python main.py -min 0 -max 1 -output myfile.csv -records 65 -url 'https://app.apollo.io/#/people?contactLabelIds[]=672e5c63c3285602cf472fef&prospectedByCurrentTeam[]=yes&sortByField=%5Bnone%5D&sortAscending=false&page=1' -con n -rows 25
+
+and when you turn off your pc, rerun again by new command: (all the same, just change "-con n" to "-con y"
+
+python main.py -min 0 -max 1 -output myfile.csv -records 65 -url 'https://app.apollo.io/#/people?contactLabelIds[]=672e5c63c3285602cf472fef&prospectedByCurrentTeam[]=yes&sortByField=%5Bnone%5D&sortAscending=false&page=1' -con y -rows 25
+
 
 (remember the quote in url)
 
