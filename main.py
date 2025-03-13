@@ -14,10 +14,14 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import argparse
 
+import undetected_chromedriver as uc
+
+
 # import argparse for con
 # output in run-time
 #
-def check_connect_sub(driver):
+def check_connect_sub():
+    global  driver
     driver.refresh()
     time.sleep(10)
     try:
@@ -29,12 +33,13 @@ def check_connect_sub(driver):
 
 
 
-def checking_internet_connection(driver):
+def checking_internet_connection():
+    global driver
     # Checking internet is error or not.
     try:
         alert_icon = driver.find_element(By.CLASS_NAME, 'apollo-icon-alert-circle')
         # Wait for the network connection connected again. Check the connection every 2 seconds.
-        while check_connect_sub(driver):
+        while check_connect_sub():
             print("Internet is interrupted")
         return True
     except Exception as e:
@@ -42,24 +47,33 @@ def checking_internet_connection(driver):
 
 
 def extract_page(data_url, rows_number, driver,add_linkedin, filename, data_frame):
+    global count
     info_list = list()
     driver.get(data_url)
     WebDriverWait(driver, 10).until(
         expected_conditions.presence_of_element_located((By.XPATH, '//div[contains(@role,"treegrid")]')))
-    time.sleep(10)
+    if count == 0:
+        print("Please check the structure of Columns:\nName\nJob title\nCompany\nActions\nLinks\nLocation\nCompany Number\nCompany Industry\nCompany Keyword\n")
+        time.sleep(90)
+    else:
+        time.sleep(5)
 
-    if (checking_internet_connection(driver)):
+    if (checking_internet_connection()):
         # Add linkedin as requirement.
-        if add_linkedin == True:
-            driver.find_element(By.CLASS_NAME,'apollo-icon-plus').click()
-            ActionChains(driver) \
-                .send_keys("Links") \
-                .send_keys(Keys.ENTER) \
-                .perform()
-            ActionBuilder(driver).clear_actions()
-            ActionChains(driver).send_keys(Keys.ESCAPE).perform()
-
-        time.sleep(3)
+        # if add_linkedin == True:
+        #     try:
+        #         driver.find_element(By.CLASS_NAME,'apollo-icon-plus').click()
+        #         ActionChains(driver) \
+        #             .send_keys("Links") \
+        #             .send_keys(Keys.ENTER) \
+        #             .perform()
+        #         ActionBuilder(driver).clear_actions()
+        #         ActionChains(driver).send_keys(Keys.ESCAPE).perform()
+        #     except Exception as e:
+        #         print("the Linkedin has added already")
+        #         pass
+        #
+        # time.sleep(3)
 
         treegrid = driver.find_element(By.XPATH, '//div[contains(@role,"treegrid")]')
         rows = treegrid.find_elements(By.XPATH, '//div[contains(@role,"row")]')
@@ -100,8 +114,8 @@ def extract_page(data_url, rows_number, driver,add_linkedin, filename, data_fram
             # Status
             sub_list.append("")
 
-            sub_list.append(sub[5])
-            sub_list.append(sub[6])
+            sub_list.append(sub[3])
+            sub_list.append(sub[4])
             if sub[1].__contains__("Update available"):
                 print("break")
                 sub_list[1] = sub[2]
@@ -125,8 +139,6 @@ def extract_page(data_url, rows_number, driver,add_linkedin, filename, data_fram
                 sub_list.append(phone_number.text.split("\n")[1])
             except Exception as e:
                 sub_list.append("N/A")
-                sub_list[6] = sub[4]
-                sub_list[7] = sub[5]
             #     Remove company keywords.
             # sub_list.append(rows[i].text.split(sub_list[4])[1].strip("\n"))
             ActionChains(driver).send_keys(Keys.ESCAPE).perform()
@@ -175,7 +187,11 @@ if __name__ == "__main__":
     time_random = random.randint(int(args.min),int(args.max) + 1)
 
 
-    driver = webdriver.Chrome()
+    # options = ChromeOptions()
+    # proxy = 'http://38.154.227.167:5868'
+    # options.add_argument('--proxy-server={}'.format(proxy))
+    # driver = webdriver.Chrome(options=options)
+    driver = uc.Chrome()
     driver.get("https://app.apollo.io/#/login")
     WebDriverWait(driver,10).until(expected_conditions.presence_of_element_located((By.XPATH, '//*[contains(@data-cy,"login-button")]')))
     time.sleep(5)
